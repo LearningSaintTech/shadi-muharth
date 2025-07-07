@@ -1,0 +1,66 @@
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+const {createUserPersonalInfo , getUserPersonalInfo , updateUserPersonalInfo,getUserProfileSummary} = require('../controllers/userProfileControllers/userpersonalinfoController');
+const {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo} = require("../controllers/userProfileControllers/userReligionInfoController");
+const {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo} = require("../controllers/userProfileControllers/userprofessionalinfoController");
+const { createUserProfileImage, updateUserProfileImage, getUserProfileImage } = require("../controllers/userProfileControllers/userprofileImageController");
+const {verifyToken} = require("../authMiddleware/authMiddleware");
+
+
+
+// Route for  create-personalInfo
+router.post('/create-personalInfo',verifyToken, createUserPersonalInfo);
+
+// Route for get-personalInfo
+router.get('/get-personalInfo',verifyToken,getUserPersonalInfo)
+
+//Route for update-personalInfo
+router.put("/update-personalInfo",verifyToken,updateUserPersonalInfo);
+
+
+
+
+
+// Route for  create-religionInfo
+router.post('/create-religionInfo',verifyToken, createUserReligionInfo);
+
+// Route for get-religionInfo
+router.get('/get-religionInfo',verifyToken,getUserReligionInfo)
+
+//Route for update-religionInfo
+router.put("/update-religionInfo",verifyToken,updateUserReligionInfo);
+
+
+
+
+// Route for  create-professionalInfo
+router.post('/create-professionalInfo',verifyToken, createUserProfessionalInfo);
+
+// Route for get-professionalInfo
+router.get('/get-professionalInfo',verifyToken,getUserProfessionalInfo)
+
+//Route for update-professionalInfo
+router.put("/update-professionalInfo",verifyToken,updateUserProfessionalInfo);
+
+
+
+// Route for  create-userProfileImage
+router.post('/create-userProfileImage',verifyToken, upload.single('profileImage'), createUserProfileImage);
+
+// Route for get-userProfileImage
+router.get('/get-userProfileImage',verifyToken,getUserProfileImage)
+
+//Route for update-userProfileImage
+router.put("/update-userProfileImage",verifyToken, upload.single('profileImage'),updateUserProfileImage);
+
+
+
+//Route for profile-summary
+router.get("/profile-summary",verifyToken,getUserProfileSummary)
+
+
+
+
+module.exports = router;
