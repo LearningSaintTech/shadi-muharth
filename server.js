@@ -5,7 +5,7 @@ const connectDB = require("./config/db");
 const userAuthRoutes = require("./routes/AuthRoutes");
 const userPersonalInfoRoutes = require("./routes/userProfileRoutes");
 const userMatchingRoutes = require("./routes/userMatchingRoutes");
-
+const favouriteUserRoutes = require("./routes/FavoruiteUserRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -31,6 +31,11 @@ app.use("/api/user",userPersonalInfoRoutes);
 
 //user-matching routes
 app.use("/api/user/matching",userMatchingRoutes)
+
+//favourite-user routes
+app.use("/api/user/favourite",favouriteUserRoutes)
+
+
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>

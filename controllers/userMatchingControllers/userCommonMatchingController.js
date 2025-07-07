@@ -115,7 +115,7 @@ const findMatchesLogic = async (userId, limit = 10) => {
           fullName: match.fullName,
           age: calculateAge(match.dob),
           profileImage: matchProfileImage?.profileImageUrl || null,
-          location: `${match.city}, ${match.state}, ${match.country}`,
+          location: `${match.city}, ${match.state}`,
           height: match.height
         });
       }

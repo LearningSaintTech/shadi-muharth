@@ -6,6 +6,7 @@ const {createUserPersonalInfo , getUserPersonalInfo , updateUserPersonalInfo,get
 const {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo} = require("../controllers/userProfileControllers/userReligionInfoController");
 const {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo} = require("../controllers/userProfileControllers/userprofessionalinfoController");
 const { createUserProfileImage, updateUserProfileImage, getUserProfileImage } = require("../controllers/userProfileControllers/userprofileImageController");
+const {saveUserPaymentDetails, getUserPaymentDetails, updateUserPaymentDetails} = require("../controllers/userProfileControllers/userpaymentdetailController");
 const {verifyToken} = require("../authMiddleware/authMiddleware");
 
 
@@ -61,6 +62,16 @@ router.put("/update-userProfileImage",verifyToken, upload.single('profileImage')
 router.get("/profile-summary",verifyToken,getUserProfileSummary)
 
 
+
+
+//Route for save-userPaymentDetails
+router.post("/save-userPaymentDetails",verifyToken,saveUserPaymentDetails);
+
+//Route for  get-userPaymentDetails
+router.get("/get-userPaymentDetails",verifyToken,getUserPaymentDetails);
+
+//Route for  update-userPaymentDetails
+router.patch("/update-userPaymentDetails",verifyToken,updateUserPaymentDetails);
 
 
 module.exports = router;

@@ -1,8 +1,8 @@
-const UserAuth = require('../models/userAuth/Auth');
-const OTPModel = require('../models/OTP/OTP');
+const UserAuth = require('../../models/userAuth/Auth');
+const OTPModel = require('../../models/OTP/OTP');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const { apiResponse } = require('../utils/apiResponse');
+const { apiResponse } = require('../../utils/apiResponse');
 
 // Generate 4-digit OTP
 const generateOTP = () => {
