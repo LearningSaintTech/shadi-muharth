@@ -20,6 +20,7 @@ const createUserPersonalInfo = async (req, res) => {
             ...req.body,
             userId: req.userId // Use userId from token
         });
+        console.log("personalInfo",userPersonalInfo)
         const savedInfo = await userPersonalInfo.save();
         apiResponse(res, {
             success: true,

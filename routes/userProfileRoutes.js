@@ -6,6 +6,7 @@ const {createUserPersonalInfo , getUserPersonalInfo , updateUserPersonalInfo,get
 const {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo} = require("../controllers/userProfileControllers/userReligionInfoController");
 const {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo} = require("../controllers/userProfileControllers/userprofessionalinfoController");
 const { createUserProfileImage, updateUserProfileImage, getUserProfileImage } = require("../controllers/userProfileControllers/userprofileImageController");
+const {uploadImages,updateImage,deleteImage,getImageGallery} = require("../controllers/userProfileControllers/usergalleryController");
 const {saveUserPaymentDetails, getUserPaymentDetails, updateUserPaymentDetails} = require("../controllers/userProfileControllers/userpaymentdetailController");
 const {verifyToken} = require("../authMiddleware/authMiddleware");
 
@@ -55,6 +56,21 @@ router.get('/get-userProfileImage',verifyToken,getUserProfileImage)
 
 //Route for update-userProfileImage
 router.put("/update-userProfileImage",verifyToken, upload.single('profileImage'),updateUserProfileImage);
+
+
+
+
+//Route for upload-imageGallery
+router.post('/create-imageGallery', verifyToken, upload.array('images', 6), uploadImages);
+
+//Route for update-imageGallery
+router.put('/update-imageGallery/:imageIndex', verifyToken, upload.single('image'), updateImage);
+
+//Route for delete-imageGallery
+router.delete('/delete-imageGallery/:imageIndex', verifyToken, deleteImage);
+
+//Route for get-imageGallery
+router.get('/get-imageGallery', verifyToken, getImageGallery);
 
 
 

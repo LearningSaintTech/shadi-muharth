@@ -7,6 +7,7 @@ const userPersonalInfoRoutes = require("./routes/userProfileRoutes");
 const userMatchingRoutes = require("./routes/userMatchingRoutes");
 const favouriteUserRoutes = require("./routes/FavoruiteUserRoutes");
 
+
 const app = express();
 const PORT = process.env.PORT;
 
@@ -34,6 +35,7 @@ app.use("/api/user/matching",userMatchingRoutes)
 
 //favourite-user routes
 app.use("/api/user/favourite",favouriteUserRoutes)
+
 
 
 

@@ -29,6 +29,14 @@ const userPersonalInfoSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    district: {
+        type: String,
+        required: true,
+    },
+    block: {
+        type: String,
+        required: true,
+    },
     fullName: {
         type: String,
         required: true,
