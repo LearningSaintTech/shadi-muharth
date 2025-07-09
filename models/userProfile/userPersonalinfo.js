@@ -60,6 +60,10 @@ const userPersonalInfoSchema = new mongoose.Schema({
     diet: {
         type: String,
         required: true,
+    },
+    LikesCount:{
+        type:Number,
+        default:0
     }
 });
 

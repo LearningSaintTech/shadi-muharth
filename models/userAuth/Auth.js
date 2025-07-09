@@ -15,6 +15,6 @@ const userAuthSchema = new mongoose.Schema({
     type:String,
     default:"user"
   }
-});
+},{timestamps: true});
 
 module.exports = mongoose.model('UserAuth', userAuthSchema);

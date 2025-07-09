@@ -6,7 +6,8 @@ const userAuthRoutes = require("./routes/AuthRoutes");
 const userPersonalInfoRoutes = require("./routes/userProfileRoutes");
 const userMatchingRoutes = require("./routes/userMatchingRoutes");
 const favouriteUserRoutes = require("./routes/FavoruiteUserRoutes");
-
+const likeuserProfileRoutes = require("./routes/likeuserprofileRoutes");
+const personalizedSearchRoutes = require("./routes/personalizedSearchRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -36,7 +37,12 @@ app.use("/api/user/matching",userMatchingRoutes)
 //favourite-user routes
 app.use("/api/user/favourite",favouriteUserRoutes)
 
+//like-user-profile routes
+app.use("/api/user/likes",likeuserProfileRoutes)
 
+
+//personalized-search-routes
+app.use("/api/user/personalized-search",personalizedSearchRoutes)
 
 
 // Start Server
