@@ -102,9 +102,9 @@ const filterUsers = async (req, res) => {
     if (preferences.college) professionalQuery.college = preferences.college;
     if (preferences.annualIncome) professionalQuery.annualIncome = { $gte: preferences.annualIncome };
     if (preferences.workDetails) {
-      if (preferences.workDetails.companyType) professionalQuery['workDetails.companyType'] = preferences.workDetails.companyType;
-      if (preferences.workDetails.position) professionalQuery['workDetails.position'] = preferences.workDetails.position;
-      if (preferences.workDetails.companyName) professionalQuery['workDetails.companyName'] = preferences.workDetails.companyName;
+    if (preferences.workDetails.companyType) professionalQuery['workDetails.companyType'] = preferences.workDetails.companyType;
+    if (preferences.workDetails.position) professionalQuery['workDetails.position'] = preferences.workDetails.position;
+    if (preferences.workDetails.companyName) professionalQuery['workDetails.companyName'] = preferences.workDetails.companyName;
     }
 
     // Fetch potential matches

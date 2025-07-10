@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const UserImageGallery =require("../../models/userProfile/userImageGallery");
+const UserAuth = require("../../models/userAuth/Auth");
 const { uploadImage, deleteFromS3 } = require('../../utils/s3Functions');
 const { apiResponse } = require('../../utils/apiResponse');
 const path = require('path');
@@ -43,6 +44,9 @@ const uploadImages = async (req, res) => {
         imageGallery: fileUrls
       });
     }
+
+    //profile complete is true
+    await UserAuth.findByIdAndUpdate(userId, { isProfileComplete: true });
 
     return apiResponse(res, {
       message: 'Images uploaded successfully',

@@ -14,6 +14,10 @@ const userAuthSchema = new mongoose.Schema({
   role:{
     type:String,
     default:"user"
+  },
+  isProfileComplete:{
+    type:Boolean,
+    default:false
   }
 },{timestamps: true});
 
