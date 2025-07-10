@@ -177,7 +177,7 @@ const filterUsers = async (req, res) => {
           if (preferences.workDetails.position && professional.workDetails.position === preferences.workDetails.position) score += 10;
           if (profileImage && preferences.workDetails.companyName && professional.workDetails.companyName === preferences.workDetails.companyName) score += 10;
         }
-c
+
         return {
           userId: personal.userId,
           profileImageUrl: profileImage ? profileImage.profileImageUrl : null,
