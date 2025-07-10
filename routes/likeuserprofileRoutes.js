@@ -6,6 +6,5 @@ const {likeProfile,unlikeProfile} = require("../controllers/likeuserprofileContr
 
 router.post('/like-user-profile',verifyToken,likeProfile);
 router.post('/unlike-user-profile',verifyToken,unlikeProfile);
-// router.get('/get-Favourite-user',verifyToken,getFavouriteUsers)
 
 module.exports = router;

@@ -22,6 +22,16 @@ const addPlan = async (req, res) => {
       smsAlert,
     } = req.body;
 
+     //Check if plan with the same name already exists
+    const existingPlan = await SubscriptionPlan.findOne({ planName: planName.trim() });
+    if (existingPlan) {
+      return apiResponse(res, {
+        success: false,
+        message: `Plan already exists.`,
+        statusCode: 409, // Conflict
+      });
+    }
+
 
     // Create new plan
     const newPlan = new SubscriptionPlan({
