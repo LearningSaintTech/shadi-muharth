@@ -187,4 +187,37 @@ const deleteImage = async (req, res) => {
 };
 
 
-module.exports={uploadImages,updateImage,deleteImage,getImageGallery}
+// Get image gallery by ID
+const getImageGalleryById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get ID from route parameters
+
+    const gallery = await UserImageGallery.findOne({ userId: id }).select('imageGallery');
+    if (!gallery) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Gallery not found',
+        statusCode: 404,
+      });
+    }
+
+    return apiResponse(res, {
+      success: true,
+      message: 'Image gallery retrieved successfully',
+      data: { imageGallery: gallery.imageGallery },
+      statusCode: 200,
+    });
+  } catch (error) {
+    console.error('Get gallery by ID error:', error);
+    return apiResponse(res, {
+      success: false,
+      message: 'Server error while retrieving image gallery',
+      data: 'An unexpected error occurred',
+      statusCode: 500,
+    });
+  }
+};
+
+
+
+module.exports={uploadImages,updateImage,deleteImage,getImageGallery,getImageGalleryById}

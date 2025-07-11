@@ -93,5 +93,38 @@ const updateUserReligionInfo = async (req, res) => {
     }
 };
 
-module.exports = {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo}
+
+// Get user religion info by ID
+const getUserReligionInfoById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get ID from route parameters
+
+
+    const userReligionInfo = await UserReligionInfo.findOne({ userId: id });
+    if (!userReligionInfo) {
+      return apiResponse(res, {
+        success: false,
+        message: 'User religion info not found',
+        statusCode: 404,
+      });
+    }
+
+    return apiResponse(res, {
+      success: true,
+      data: userReligionInfo,
+      message: 'User religion info retrieved successfully',
+      statusCode: 200,
+    });
+  } catch (error) {
+    return apiResponse(res, {
+      success: false,
+      message: 'Error retrieving user religion info',
+      data: 'An unexpected error occurred',
+      statusCode: 500,
+    });
+  }
+};
+
+
+module.exports = {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo,getUserReligionInfoById}
 

@@ -94,5 +94,36 @@ const updateUserProfessionalInfo = async (req, res) => {
     }
 };
 
-module.exports = {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo}
+
+// Get user professional info by ID
+const getUserProfessionalInfoById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get ID from route parameters
+
+    const userProfessionalInfo = await UserProfessionalInfo.findOne({ userId: id });
+    if (!userProfessionalInfo) {
+      return apiResponse(res, {
+        success: false,
+        message: 'User professional info not found',
+        statusCode: 404,
+      });
+    }
+
+    return apiResponse(res, {
+      success: true,
+      data: userProfessionalInfo,
+      message: 'User professional info retrieved successfully',
+      statusCode: 200,
+    });
+  } catch (error) {
+    return apiResponse(res, {
+      success: false,
+      message: 'Error retrieving user professional info',
+      data: 'An unexpected error occurred',
+      statusCode: 500,
+    });
+  }
+};
+
+module.exports = {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo,getUserProfessionalInfoById}
 

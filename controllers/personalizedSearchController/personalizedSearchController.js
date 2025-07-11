@@ -162,7 +162,7 @@ const filterUsers = async (req, res) => {
         if (preferences.city && personal.city === preferences.city) score += 10;
         if (preferences.district && personal.district === preferences.district) score += 10;
         if (preferences.block && personal.block === preferences.block) score += 10;
-        if (preferences.maritalStatus && personal.maritalStatus === preferences.maritalStatus) score += 10;
+        if (preferences.maritalStatus && personal.martialStatus === preferences.maritalStatus) score += 10;
         if (preferences.height && personal.height === preferences.height) score += 10;
         if (preferences.diet && personal.diet === preferences.diet) score += 10;
         if (preferences.religion && religion.religion === preferences.religion) score += 10;

@@ -12,7 +12,7 @@ const createUserPersonalInfo = async (req, res) => {
             return apiResponse(res, {
                 success: false,
                 message: 'User personal info already exists',
-                statusCode: 409 // Conflict status code
+                statusCode: 409 
             });
         }
 
@@ -144,4 +144,35 @@ const getUserProfileSummary = async (req, res) => {
   }
 };
 
-module.exports = { createUserPersonalInfo, getUserPersonalInfo, updateUserPersonalInfo ,getUserProfileSummary};
+
+//get by id 
+const getUserPersonalInfoById = async (req, res) => {
+  try {
+    const { id } = req.params; 
+
+    const userPersonalInfo = await UserPersonalInfo.findOne({ userId: id });
+    if (!userPersonalInfo) {
+      return apiResponse(res, {
+        success: false,
+        message: 'User personal info not found',
+        statusCode: 404,
+      });
+    }
+
+    return apiResponse(res, {
+      success: true,
+      data: userPersonalInfo,
+      message: 'User personal info retrieved successfully',
+      statusCode: 200,
+    });
+  } catch (error) {
+    return apiResponse(res, {
+      success: false,
+      message: 'Error retrieving user personal info',
+      data: 'An unexpected error occurred',
+      statusCode: 500,
+    });
+  }
+};
+
+module.exports = { createUserPersonalInfo, getUserPersonalInfo, updateUserPersonalInfo ,getUserProfileSummary,getUserPersonalInfoById};

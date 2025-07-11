@@ -9,6 +9,8 @@ const favouriteUserRoutes = require("./routes/FavoruiteUserRoutes");
 const likeuserProfileRoutes = require("./routes/likeuserprofileRoutes");
 const personalizedSearchRoutes = require("./routes/personalizedSearchRoutes");
 const subscriptionplanRoutes = require("./routes/subscriptionplanRoutes");
+const searchUserRoutes = require("./routes/searchUserRoutes");
+const emailVerifyRoutes = require("./routes/verifyemailRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -47,6 +49,12 @@ app.use("/api/user/personalized-search",personalizedSearchRoutes)
 
 //subscription-plan routes
 app.use("/api/plans",subscriptionplanRoutes)
+
+//search-user routes
+app.use("/api/user/search",searchUserRoutes)
+
+//verify-email routes
+app.use("/api/user/email",emailVerifyRoutes)
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>

@@ -146,4 +146,37 @@ const getUserProfileImage = async (req, res) => {
 };
 
 
-module.exports = { createUserProfileImage, updateUserProfileImage, getUserProfileImage };
+// Get user profile image by ID 
+const getUserProfileImageById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get ID from route parameters
+    
+    // Find profile image and populate userId
+    const userProfileImage = await UserProfileImage.findOne({ userId: id })
+    if (!userProfileImage) {
+      return apiResponse(res, {
+        success: false,
+        message: 'User profile image not found',
+        statusCode: 404,
+      });
+    }
+
+    return apiResponse(res, {
+      success: true,
+      data: userProfileImage,
+      message: 'User profile image retrieved successfully',
+      statusCode: 200,
+    });
+  } catch (error) {
+    console.error('Get profile image by ID error:', error);
+    return apiResponse(res, {
+      success: false,
+      message: 'Error retrieving user profile image',
+      data: 'An unexpected error occurred',
+      statusCode: 500,
+    });
+  }
+};
+
+
+module.exports = { createUserProfileImage, updateUserProfileImage, getUserProfileImage,getUserProfileImageById };

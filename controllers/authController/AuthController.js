@@ -47,7 +47,7 @@ const login = async (req, res) => {
     return apiResponse(res, {
       success: true,
       message: 'OTP sent to mobile number for login',
-      data: { otp }, // Remove this in production
+      data: { otp }, 
       statusCode: 200
     });
   } catch (error) {

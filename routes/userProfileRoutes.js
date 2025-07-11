@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
-const {createUserPersonalInfo , getUserPersonalInfo , updateUserPersonalInfo,getUserProfileSummary} = require('../controllers/userProfileControllers/userpersonalinfoController');
-const {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo} = require("../controllers/userProfileControllers/userReligionInfoController");
-const {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo} = require("../controllers/userProfileControllers/userprofessionalinfoController");
-const { createUserProfileImage, updateUserProfileImage, getUserProfileImage } = require("../controllers/userProfileControllers/userprofileImageController");
-const {uploadImages,updateImage,deleteImage,getImageGallery} = require("../controllers/userProfileControllers/usergalleryController");
+const {createUserPersonalInfo , getUserPersonalInfo , updateUserPersonalInfo,getUserProfileSummary,getUserPersonalInfoById} = require('../controllers/userProfileControllers/userpersonalinfoController');
+const {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo,getUserReligionInfoById} = require("../controllers/userProfileControllers/userReligionInfoController");
+const {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo,getUserProfessionalInfoById} = require("../controllers/userProfileControllers/userprofessionalinfoController");
+const { createUserProfileImage, updateUserProfileImage, getUserProfileImage,getUserProfileImageById } = require("../controllers/userProfileControllers/userprofileImageController");
+const {uploadImages,updateImage,deleteImage,getImageGallery,getImageGalleryById} = require("../controllers/userProfileControllers/usergalleryController");
 const {saveUserPaymentDetails, getUserPaymentDetails, updateUserPaymentDetails} = require("../controllers/userProfileControllers/userpaymentdetailController");
 const {verifyToken} = require("../authMiddleware/authMiddleware");
 
@@ -22,6 +22,8 @@ router.get('/get-personalInfo',verifyToken,getUserPersonalInfo)
 router.put("/update-personalInfo",verifyToken,updateUserPersonalInfo);
 
 
+// Route for get-personalInfo
+router.get('/get-personalInfobyId/:id',verifyToken,getUserPersonalInfoById);
 
 
 
@@ -33,6 +35,9 @@ router.get('/get-religionInfo',verifyToken,getUserReligionInfo)
 
 //Route for update-religionInfo
 router.put("/update-religionInfo",verifyToken,updateUserReligionInfo);
+
+//Route for get-religionInfo-by-Id
+router.get("/get-religionInfobyId/:id",verifyToken,getUserReligionInfoById);
 
 
 
@@ -46,6 +51,9 @@ router.get('/get-professionalInfo',verifyToken,getUserProfessionalInfo)
 //Route for update-professionalInfo
 router.put("/update-professionalInfo",verifyToken,updateUserProfessionalInfo);
 
+//Route for get-professionalInfo-by-Id
+router.get("/get-professionalInfobyId/:id",verifyToken,getUserProfessionalInfoById);
+
 
 
 // Route for  create-userProfileImage
@@ -56,6 +64,9 @@ router.get('/get-userProfileImage',verifyToken,getUserProfileImage)
 
 //Route for update-userProfileImage
 router.put("/update-userProfileImage",verifyToken, upload.single('profileImage'),updateUserProfileImage);
+
+// Route for get-userProfileImageById
+router.get('/get-userProfileImagebyId/:id',verifyToken,getUserProfileImageById)
 
 
 
@@ -71,6 +82,9 @@ router.delete('/delete-imageGallery/:imageIndex', verifyToken, deleteImage);
 
 //Route for get-imageGallery
 router.get('/get-imageGallery', verifyToken, getImageGallery);
+
+//Route for get-imageGalleryById
+router.get('/get-imageGallerybyId/:id', verifyToken, getImageGalleryById);
 
 
 
