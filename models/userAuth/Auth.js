@@ -22,7 +22,18 @@ const userAuthSchema = new mongoose.Schema({
   isProfileComplete:{
     type:Boolean,
     default:false
-  }
+  },
+  assignedPlanID:{
+    type: mongoose.Schema.Types.ObjectId,
+     ref: 'SubscriptionPlan' ,
+      default: new mongoose.Types.ObjectId(),
+  },
+  // planStartDate:{
+  //   type:Date
+  // },
+  // planExpiryDate:{
+  //   type:Date
+  // }
 },{timestamps: true});
 
 module.exports = mongoose.model('UserAuth', userAuthSchema);

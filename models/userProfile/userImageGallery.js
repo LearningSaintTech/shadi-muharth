@@ -8,6 +8,7 @@ const userImageGallerySchema = new mongoose.Schema({
     },
     imageGallery: {
         type: [String],
+        required:true
     },
 });
 

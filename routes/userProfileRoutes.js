@@ -8,7 +8,8 @@ const {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessional
 const { createUserProfileImage, updateUserProfileImage, getUserProfileImage,getUserProfileImageById } = require("../controllers/userProfileControllers/userprofileImageController");
 const {uploadImages,updateImage,deleteImage,getImageGallery,getImageGalleryById} = require("../controllers/userProfileControllers/usergalleryController");
 const {saveUserPaymentDetails, getUserPaymentDetails, updateUserPaymentDetails} = require("../controllers/userProfileControllers/userpaymentdetailController");
-const {verifyToken} = require("../authMiddleware/authMiddleware");
+const {verifyToken} = require("../Middlewares/authMiddleware");
+const {restrictAccess} = require("../Middlewares/planMiddlreware");
 
 
 
@@ -23,7 +24,7 @@ router.put("/update-personalInfo",verifyToken,updateUserPersonalInfo);
 
 
 // Route for get-personalInfo
-router.get('/get-personalInfobyId/:id',verifyToken,getUserPersonalInfoById);
+router.get('/get-personalInfobyId/:id',verifyToken,restrictAccess("personalInfo"),getUserPersonalInfoById);
 
 
 
@@ -37,7 +38,7 @@ router.get('/get-religionInfo',verifyToken,getUserReligionInfo)
 router.put("/update-religionInfo",verifyToken,updateUserReligionInfo);
 
 //Route for get-religionInfo-by-Id
-router.get("/get-religionInfobyId/:id",verifyToken,getUserReligionInfoById);
+router.get("/get-religionInfobyId/:id",verifyToken,restrictAccess("religiousInfo"),getUserReligionInfoById);
 
 
 
@@ -52,7 +53,7 @@ router.get('/get-professionalInfo',verifyToken,getUserProfessionalInfo)
 router.put("/update-professionalInfo",verifyToken,updateUserProfessionalInfo);
 
 //Route for get-professionalInfo-by-Id
-router.get("/get-professionalInfobyId/:id",verifyToken,getUserProfessionalInfoById);
+router.get("/get-professionalInfobyId/:id",verifyToken,restrictAccess("professionalInfo"),getUserProfessionalInfoById);
 
 
 
@@ -66,7 +67,7 @@ router.get('/get-userProfileImage',verifyToken,getUserProfileImage)
 router.put("/update-userProfileImage",verifyToken, upload.single('profileImage'),updateUserProfileImage);
 
 // Route for get-userProfileImageById
-router.get('/get-userProfileImagebyId/:id',verifyToken,getUserProfileImageById)
+router.get('/get-userProfileImagebyId/:id',verifyToken,restrictAccess("profilePhoto"),getUserProfileImageById)
 
 
 
@@ -84,7 +85,7 @@ router.delete('/delete-imageGallery/:imageIndex', verifyToken, deleteImage);
 router.get('/get-imageGallery', verifyToken, getImageGallery);
 
 //Route for get-imageGalleryById
-router.get('/get-imageGallerybyId/:id', verifyToken, getImageGalleryById);
+router.get('/get-imageGallerybyId/:id', verifyToken,restrictAccess("imageGallery"), getImageGalleryById);
 
 
 
