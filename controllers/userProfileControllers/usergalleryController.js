@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserImageGallery =require("../../models/userProfile/userImageGallery");
+const UserImageGallery = require("../../models/userProfile/userImageGallery");
 const UserAuth = require("../../models/userAuth/Auth");
 const { uploadImage, deleteFromS3 } = require('../../utils/s3Functions');
 const { apiResponse } = require('../../utils/apiResponse');
@@ -45,8 +45,20 @@ const uploadImages = async (req, res) => {
       });
     }
 
-    //profile complete is true
-    await UserAuth.findByIdAndUpdate(userId, { isProfileComplete: true });
+    // Update isProfileComplete using findById and save to trigger middleware
+    const user = await UserAuth.findById(userId);
+    if (!user) {
+      return apiResponse(res, {
+        success: false,
+        message: 'User not found',
+        statusCode: 404
+      });
+    }
+
+    if (!user.isProfileComplete) {
+      user.isProfileComplete = true;
+      await user.save(); // Triggers pre('save') middleware to set planStartDate and planExpiryDate
+    }
 
     return apiResponse(res, {
       message: 'Images uploaded successfully',
@@ -220,4 +232,4 @@ const getImageGalleryById = async (req, res) => {
 
 
 
-module.exports={uploadImages,updateImage,deleteImage,getImageGallery,getImageGalleryById}
+module.exports = { uploadImages, updateImage, deleteImage, getImageGallery, getImageGalleryById }
