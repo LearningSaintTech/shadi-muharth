@@ -6,10 +6,11 @@ const { uploadImage, deleteImage } = require("../../utils/s3Functions");
 // Create a new user profile image
 const createUserProfileImage = async (req, res) => {
     console.log("44444444444");
+    const userId = req.userId;
     try {
         console.log("qqqq");
         if (!req.file) {
-            console.log("111",req.file)
+            console.log("111", req.file)
             return apiResponse(res, {
                 success: false,
                 message: 'No file provided',
@@ -35,6 +36,22 @@ const createUserProfileImage = async (req, res) => {
             profileImageUrl: fileUrl
         });
         const savedImage = await userProfileImage.save();
+
+        // Update isProfileComplete using findById and save to trigger middleware
+        const user = await UserAuth.findById(userId);
+        if (!user) {
+            return apiResponse(res, {
+                success: false,
+                message: 'User not found',
+                statusCode: 404
+            });
+        }
+
+        if (!user.isProfileComplete) {
+            user.isProfileComplete = true;
+            await user.save(); 
+        }
+
         apiResponse(res, {
             success: true,
             data: savedImage,
@@ -63,7 +80,7 @@ const updateUserProfileImage = async (req, res) => {
                 success: false,
                 message: 'No file provided',
                 statusCode: 400
-            }); 
+            });
         }
 
         console.log('File received:', req.file.originalname);
@@ -148,35 +165,37 @@ const getUserProfileImage = async (req, res) => {
 
 // Get user profile image by ID 
 const getUserProfileImageById = async (req, res) => {
-  try {
-    const { id } = req.params; // Get ID from route parameters
-    
-    // Find profile image and populate userId
-    const userProfileImage = await UserProfileImage.findOne({ userId: id })
-    if (!userProfileImage) {
-      return apiResponse(res, {
-        success: false,
-        message: 'User profile image not found',
-        statusCode: 404,
-      });
-    }
+    try {
+        const { id } = req.params; // Get ID from route parameters
 
-    return apiResponse(res, {
-      success: true,
-      data: userProfileImage,
-      message: 'User profile image retrieved successfully',
-      statusCode: 200,
-    });
-  } catch (error) {
-    console.error('Get profile image by ID error:', error);
-    return apiResponse(res, {
-      success: false,
-      message: 'Error retrieving user profile image',
-      data: 'An unexpected error occurred',
-      statusCode: 500,
-    });
-  }
+        // Find profile image and populate userId
+        const userProfileImage = await UserProfileImage.findOne({ userId: id })
+        if (!userProfileImage) {
+            return apiResponse(res, {
+                success: false,
+                message: 'User profile image not found',
+                statusCode: 404,
+            });
+        }
+
+        return apiResponse(res, {
+            success: true,
+            data: userProfileImage,
+            message: 'User profile image retrieved successfully',
+            statusCode: 200,
+        });
+    } catch (error) {
+        console.error('Get profile image by ID error:', error);
+        return apiResponse(res, {
+            success: false,
+            message: 'Error retrieving user profile image',
+            data: 'An unexpected error occurred',
+            statusCode: 500,
+        });
+    }
 };
 
 
-module.exports = { createUserProfileImage, updateUserProfileImage, getUserProfileImage,getUserProfileImageById };
+
+
+module.exports = { createUserProfileImage, updateUserProfileImage, getUserProfileImage, getUserProfileImageById };

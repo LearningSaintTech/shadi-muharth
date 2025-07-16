@@ -14,6 +14,8 @@ const emailVerifyRoutes = require("./routes/verifyemailRoutes");
 const documentsVerificationRoutes = require("./routes/documentsverificationRoutes");
 const sendInterestRoutes = require("./routes/sendInterestRoutes");
 const sendprofileVerificationRoutes = require("./routes/profileVerification");
+const buyPlanRoutes = require("./routes/buyPlanRoutes");
+const showTagRoutes = require("./routes/showplantagRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -67,6 +69,12 @@ app.use("/api/user/interest",sendInterestRoutes)
 
 //profile-verification routes 
 app.use("/api/user/verification",sendprofileVerificationRoutes)
+
+//buy-plan routes
+app.use("/api/user/buy-plan",buyPlanRoutes)
+
+//show-tag routes
+app.use("/api/user/tag",showTagRoutes)
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>

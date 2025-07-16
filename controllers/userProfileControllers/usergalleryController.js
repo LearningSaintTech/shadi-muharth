@@ -45,21 +45,6 @@ const uploadImages = async (req, res) => {
       });
     }
 
-    // Update isProfileComplete using findById and save to trigger middleware
-    const user = await UserAuth.findById(userId);
-    if (!user) {
-      return apiResponse(res, {
-        success: false,
-        message: 'User not found',
-        statusCode: 404
-      });
-    }
-
-    if (!user.isProfileComplete) {
-      user.isProfileComplete = true;
-      await user.save(); // Triggers pre('save') middleware to set planStartDate and planExpiryDate
-    }
-
     return apiResponse(res, {
       message: 'Images uploaded successfully',
       data: { imageGallery: gallery.imageGallery }
