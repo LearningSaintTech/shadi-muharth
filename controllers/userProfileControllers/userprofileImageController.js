@@ -1,4 +1,5 @@
 const UserProfileImage = require('../../models/userProfile/userProfileImage');
+const UserAuth = require("../../models/userAuth/Auth");
 const { apiResponse } = require('../../utils/apiResponse');
 const { uploadImage, deleteImage } = require("../../utils/s3Functions");
 

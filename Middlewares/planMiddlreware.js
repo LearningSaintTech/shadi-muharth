@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const SubscriptionPlan = require('../models/subscriptionPlans/subscriptionPlans');
+const Chat = require("../models/chat/chat");
 const User = require('../models/userAuth/Auth');
+const ChatRequest = require("../models/chat/chatRequest");
 const { apiResponse } = require('../utils/apiResponse');
 
 // Middleware to check access based on subscription plan
@@ -71,7 +73,7 @@ const restrictAccess = (requiredFeature) => {
               console.log(`[restrictAccess] Chat message limit exceeded for user ID: ${userId}`);
               return apiResponse(res, {
                 success: false,
-                message: 'Chat message limit exceeded',
+                message: 'Chat message limit exceeded (Silver: 50 messages, Gold: unlimited)',
                 statusCode: 403,
               });
             }
@@ -147,14 +149,13 @@ const restrictAccess = (requiredFeature) => {
   };
 };
 
-// Placeholder helper function to check message count
 async function checkMessageCount(userId) {
   console.log(`[checkMessageCount] Fetching message count for user ID: ${userId}`);
-  // Implement logic to fetch message count from a usage tracking model
-  // Example: return await MessageUsage.findOne({ userId }).count || 0;
-  const count = 0; // Replace with actual logic
-  console.log(`[checkMessageCount] Message count for user ID ${userId}: ${count}`);
-  return count;
+  const chatCount = await Chat.countDocuments({ senderId: userId });
+  const requestCount = await ChatRequest.countDocuments({ senderId: userId, status: 'accepted' });
+  const totalCount = chatCount + requestCount;
+  console.log(`[checkMessageCount] Total message count for user ID ${userId}: ${totalCount} (Chats: ${chatCount}, Accepted Requests: ${requestCount})`);
+  return totalCount;
 }
 
 // Placeholder helper function to check interest count

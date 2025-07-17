@@ -16,6 +16,7 @@ const sendInterestRoutes = require("./routes/sendInterestRoutes");
 const sendprofileVerificationRoutes = require("./routes/profileVerification");
 const buyPlanRoutes = require("./routes/buyPlanRoutes");
 const showTagRoutes = require("./routes/showplantagRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -75,6 +76,9 @@ app.use("/api/user/buy-plan",buyPlanRoutes)
 
 //show-tag routes
 app.use("/api/user/tag",showTagRoutes)
+
+//chat routes
+app.use("/api/user/chat",chatRoutes)
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>
