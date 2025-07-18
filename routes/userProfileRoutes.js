@@ -7,7 +7,6 @@ const {createUserReligionInfo,getUserReligionInfo,updateUserReligionInfo,getUser
 const {createUserProfessionalInfo,getUserProfessionalInfo,updateUserProfessionalInfo,getUserProfessionalInfoById} = require("../controllers/userProfileControllers/userprofessionalinfoController");
 const { createUserProfileImage, updateUserProfileImage, getUserProfileImage,getUserProfileImageById } = require("../controllers/userProfileControllers/userprofileImageController");
 const {uploadImages,updateImage,deleteImage,getImageGallery,getImageGalleryById} = require("../controllers/userProfileControllers/usergalleryController");
-const {saveUserPaymentDetails, getUserPaymentDetails, updateUserPaymentDetails} = require("../controllers/userProfileControllers/userpaymentdetailController");
 const {verifyToken} = require("../Middlewares/authMiddleware");
 const {restrictAccess} = require("../Middlewares/planMiddlreware");
 
@@ -93,16 +92,6 @@ router.get('/get-imageGallerybyId/:id', verifyToken,restrictAccess("imageGallery
 router.get("/profile-summary",verifyToken,getUserProfileSummary)
 
 
-
-
-//Route for save-userPaymentDetails
-router.post("/save-userPaymentDetails",verifyToken,saveUserPaymentDetails);
-
-//Route for  get-userPaymentDetails
-router.get("/get-userPaymentDetails",verifyToken,getUserPaymentDetails);
-
-//Route for  update-userPaymentDetails
-router.patch("/update-userPaymentDetails",verifyToken,updateUserPaymentDetails);
 
 
 module.exports = router;

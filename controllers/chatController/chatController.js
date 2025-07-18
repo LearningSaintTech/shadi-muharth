@@ -142,7 +142,7 @@ const respondMessageRequest = async (req, res) => {
           mediaUrl: chatRequest.mediaUrl,
           mediaType: chatRequest.mediaType,
           timestamp: chatRequest.createdAt,
-          readStatus: false
+          readStatus: true
         });
         await chat.save();
       }
@@ -499,4 +499,122 @@ const getChatMessages = async (req, res) => {
   }
 };
 
-module.exports = {sendMessageRequest,respondMessageRequest,sendMessage,getChatList,getChatMessages}
+
+
+// Search Chats by Name
+const searchChatsByName = async (req, res) => {
+  try {
+    const { name } = req.query;
+    const userId = req.userId;
+    console.log(`[searchChatsByName] Starting for userId: ${userId}, search name: ${name}`);
+
+    // Validate input
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+      console.log(`[searchChatsByName] Invalid or missing name parameter: ${name}`);
+      return apiResponse(res, {
+        success: false,
+        message: 'Name query parameter is required',
+        statusCode: 400
+      });
+    }
+
+    // Find accepted chat requests involving the current user
+    console.log(`[searchChatsByName] Fetching accepted chat requests for userId: ${userId}`);
+    const chatRequests = await ChatRequest.find({
+      $or: [
+        { senderId: userId, status: 'accepted' },
+        { receiverId: userId, status: 'accepted' }
+      ]
+    }).lean();
+    console.log(`[searchChatsByName] Found ${chatRequests.length} accepted chat requests`);
+
+    // Extract other user IDs from chat requests
+    const otherUserIds = chatRequests.map(request =>
+      request.senderId.toString() === userId ? request.receiverId.toString() : request.senderId.toString()
+    );
+    console.log(`[searchChatsByName] Other user IDs: ${otherUserIds.join(', ')}`);
+
+    // Find users whose names match the search term
+    console.log(`[searchChatsByName] Searching UserPersonalInfo for name: ${name}`);
+    const matchingUsers = await UserPersonalInfo.find({
+      userId: { $in: otherUserIds.map(id => new mongoose.Types.ObjectId(id)) },
+      fullName: { $regex: name.trim(), $options: 'i' }
+    }).lean();
+    console.log(`[searchChatsByName] Found ${matchingUsers.length} matching users`);
+
+    const matchingUserIds = matchingUsers.map(user => user.userId.toString());
+    console.log(`[searchChatsByName] Matching user IDs: ${matchingUserIds.join(', ')}`);
+
+    // Generate conversation IDs for matching users
+    const conversationIds = matchingUserIds.map(otherUserId =>
+      generateConversationId(userId, otherUserId)
+    );
+    console.log(`[searchChatsByName] Generated conversationIds: ${conversationIds.join(', ')}`);
+
+    // Fetch the latest message for each conversation
+    const chatList = [];
+    for (const conversationId of conversationIds) {
+      console.log(`[searchChatsByName] Fetching latest message for conversationId: ${conversationId}`);
+      const latestMessage = await Chat.findOne({ conversationId })
+        .sort({ timestamp: -1 }) // Most recent first
+        .populate({
+          path: 'senderId',
+          select: '_id'
+        })
+        .populate({
+          path: 'receiverId',
+          select: '_id'
+        })
+        .lean();
+
+      if (latestMessage) {
+        const otherUserId = latestMessage.senderId._id.toString() === userId
+          ? latestMessage.receiverId._id.toString()
+          : latestMessage.senderId._id.toString();
+
+        const otherUserInfo = matchingUsers.find(user => user.userId.toString() === otherUserId);
+        const otherUserProfileImage = await UserProfileImage.findOne({ userId: otherUserId }).lean();
+
+        chatList.push({
+          conversationId,
+          otherUserId,
+          otherUserName: otherUserInfo ? otherUserInfo.fullName : null,
+          otherUserProfilePhoto: otherUserProfileImage ? otherUserProfileImage.profileImageUrl : null,
+          lastMessage: {
+            messageId: latestMessage._id,
+            message: latestMessage.message,
+            mediaUrl: latestMessage.mediaUrl,
+            mediaType: latestMessage.mediaType,
+            timestamp: latestMessage.timestamp,
+            readStatus: latestMessage.readStatus,
+            isSender: latestMessage.senderId._id.toString() === userId
+          }
+        });
+        console.log(`[searchChatsByName] Added chat to list: conversationId=${conversationId}, otherUserId=${otherUserId}`);
+      } else {
+        console.log(`[searchChatsByName] No messages found for conversationId: ${conversationId}`);
+      }
+    }
+
+    // Sort chats by last message timestamp (most recent first)
+    chatList.sort((a, b) => new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp));
+    console.log(`[searchChatsByName] Returning ${chatList.length} chats, sorted by timestamp`);
+
+    return apiResponse(res, {
+      success: true,
+      message: 'Chats retrieved successfully',
+      data: {
+        chats: chatList
+      }
+    });
+  } catch (error) {
+    console.error(`[searchChatsByName] Error for userId: ${req.userId || 'unknown'}:`, error);
+    return apiResponse(res, {
+      success: false,
+      message: 'Server error while searching chats',
+      statusCode: 500
+    });
+  }
+};
+
+module.exports = {sendMessageRequest,respondMessageRequest,sendMessage,getChatList,getChatMessages,searchChatsByName}

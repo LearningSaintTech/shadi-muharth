@@ -30,7 +30,7 @@ const userAuthSchema = new mongoose.Schema({
   assignedPlanID:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'SubscriptionPlan' ,
-    default: new mongoose.Types.ObjectId("686f66a82a28156c14144533"),
+    default: new mongoose.Types.ObjectId("687a1178c813673fcf725761"),
   },
   planName:{
     type:String,

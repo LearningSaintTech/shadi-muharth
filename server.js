@@ -17,6 +17,7 @@ const sendprofileVerificationRoutes = require("./routes/profileVerification");
 const buyPlanRoutes = require("./routes/buyPlanRoutes");
 const showTagRoutes = require("./routes/showplantagRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const deleteAccountRoutes = require("./routes/deleteprofileRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -79,6 +80,9 @@ app.use("/api/user/tag",showTagRoutes)
 
 //chat routes
 app.use("/api/user/chat",chatRoutes)
+
+//delete-account Routes
+app.use("/api/user/delete",deleteAccountRoutes)
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>

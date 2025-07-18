@@ -4,6 +4,7 @@ const Chat = require("../models/chat/chat");
 const User = require('../models/userAuth/Auth');
 const ChatRequest = require("../models/chat/chatRequest");
 const { apiResponse } = require('../utils/apiResponse');
+const UserInterest = require("../models/sendInterest/sendInterest");
 
 // Middleware to check access based on subscription plan
 const restrictAccess = (requiredFeature) => {
@@ -80,13 +81,21 @@ const restrictAccess = (requiredFeature) => {
           }
           break;
         case 'interestSend':
+          if (plan.interestSend === 0) {
+            console.log(`[restrictAccess] Interest send restricted for Regular plan for user ID: ${userId}`);
+            return apiResponse(res, {
+              success: false,
+              message: 'Access to interestSend is restricted for your plan',
+              statusCode: 403,
+            });
+          }
           const interestCount = await checkInterestCount(userId);
           console.log(`[restrictAccess] Current interest count: ${interestCount}, Limit: ${plan.interestSend}`);
           if (interestCount >= plan.interestSend) {
             console.log(`[restrictAccess] Interest send limit exceeded for user ID: ${userId}`);
             return apiResponse(res, {
               success: false,
-              message: 'Interest send limit exceeded',
+              message: `Interest send limit exceeded (Silver: 100, Gold: 150)`,
               statusCode: 403,
             });
           }
@@ -116,6 +125,10 @@ const restrictAccess = (requiredFeature) => {
         case 'smsAlert':
           hasAccess = plan.smsAlert;
           console.log(`[restrictAccess] SMS alert access: ${hasAccess}`);
+          break;
+        case 'profileVerification':
+          hasAccess = plan.profileVerification;
+          console.log(`[restrictAccess] Profile verification access: ${hasAccess}`);
           break;
         default:
           console.log(`[restrictAccess] Invalid feature requested: ${requiredFeature}`);
@@ -149,6 +162,7 @@ const restrictAccess = (requiredFeature) => {
   };
 };
 
+// Helper function to check message count
 async function checkMessageCount(userId) {
   console.log(`[checkMessageCount] Fetching message count for user ID: ${userId}`);
   const chatCount = await Chat.countDocuments({ senderId: userId });
@@ -158,14 +172,12 @@ async function checkMessageCount(userId) {
   return totalCount;
 }
 
-// Placeholder helper function to check interest count
+// Helper function to check interest count
 async function checkInterestCount(userId) {
   console.log(`[checkInterestCount] Fetching interest count for user ID: ${userId}`);
-  // Implement logic to fetch interest sent count from a usage tracking model
-  // Example: return await InterestUsage.findOne({ userId }).count || 0;
-  const count = 0; // Replace with actual logic
-  console.log(`[checkInterestCount] Interest count for user ID ${userId}: ${count}`);
-  return count;
+  const interestCount = await UserInterest.countDocuments({ senderId: userId });
+  console.log(`[checkInterestCount] Interest count for user ID ${userId}: ${interestCount}`);
+  return interestCount;
 }
 
 module.exports = { restrictAccess };

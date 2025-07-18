@@ -64,6 +64,11 @@ const subscriptionPlansSchema = new mongoose.Schema(
       default: false,
       required: true,
     },
+    profileVerification: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     whatsappSupport: {
       type: Boolean,
       default: false,

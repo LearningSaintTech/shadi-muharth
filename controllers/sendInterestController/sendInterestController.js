@@ -6,7 +6,7 @@ const { apiResponse } = require('../../utils/apiResponse');
 //send-Interest controller
 const sendInterest = async (req, res) => {
   try {
-    const { receiverId } = req.body; // Target user to send interest to
+    const { receiverId } = req.body; 
     const senderId = req.userId; 
 
     // Validate input
