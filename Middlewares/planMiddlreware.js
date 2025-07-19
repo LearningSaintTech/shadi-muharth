@@ -46,6 +46,16 @@ const restrictAccess = (requiredFeature) => {
       const plan = user.assignedPlanID; // Populated SubscriptionPlan document
       console.log(`[restrictAccess] User plan: ${plan.planName} (ID: ${plan._id})`);
 
+      // Check if the plan has expired
+      if (plan.expiresAt && new Date() > new Date(plan.expiresAt)) {
+        console.log(`[restrictAccess] Plan expired for user ID: ${userId}, expiresAt: ${plan.expiresAt}`);
+        return apiResponse(res, {
+          success: false,
+          message: 'Your subscription plan has expired',
+          statusCode: 403,
+        });
+      }
+
       // Check if the required feature is allowed in the user's plan
       let hasAccess = false;
       console.log(`[restrictAccess] Checking feature access for: ${requiredFeature}`);
