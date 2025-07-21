@@ -3,16 +3,27 @@ const UserPersonalInfo = require('../../models/userProfile/userPersonalinfo');
 const crypto = require('crypto');
 const OTP = require('../../models/OTP/OTP');
 const { apiResponse } = require('../../utils/apiResponse');
+const nodemailer = require('nodemailer');
+require("dotenv").config();
+
+// Configure Nodemailer transporter
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS  
+    }
+});
 
 // Generate 4-digit OTP
 const generateOTP = () => {
-  return crypto.randomInt(1000, 9999).toString();
+    return crypto.randomInt(1000, 9999).toString();
 };
 
 // Controller to send OTP for email verification
 const sendEmailOTP = async (req, res) => {
     try {
-        const userId = req.userId
+        const userId = req.userId;
         const { email } = req.body;
         
         const user = await UserAuth.findById(userId);
@@ -32,11 +43,26 @@ const sendEmailOTP = async (req, res) => {
             otp
         });
 
-        console.log(`OTP ${otp} sent to ${email}`); 
+        // Email configuration
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Email Verification OTP',
+            html: `
+                <h3>Email Verification</h3>
+                <p>Your OTP for email verification is: <strong>${otp}</strong></p>
+                <p>This OTP is valid for 10 minutes.</p>
+                <p>If you didn't request this, please ignore this email.</p>
+            `
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        console.log(`OTP ${otp} sent to ${email}`);
 
         return apiResponse(res, {
             message: 'OTP sent to email successfully',
-            data:{ otp } 
+            data: { otp }
         });
     } catch (error) {
         console.error('Error sending email OTP:', error);
@@ -68,6 +94,8 @@ const verifyEmailOTP = async (req, res) => {
                 statusCode: 400
             });
         }
+
+        
 
         // Update email verification status in UserAuth
         const user = await UserAuth.findByIdAndUpdate(
@@ -108,13 +136,10 @@ const verifyEmailOTP = async (req, res) => {
     }
 };
 
-
-
 // Controller to resend OTP for email verification
 const resendEmailOTP = async (req, res) => {
     try {
         const { email } = req.body;
-        
 
         // Delete any existing OTP for this email to avoid duplicates
         await OTP.deleteOne({ email });
@@ -127,11 +152,26 @@ const resendEmailOTP = async (req, res) => {
             otp
         });
 
-        console.log(`Resent OTP ${otp} to ${email}`); 
+        // Email configuration
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Email Verification OTP (Resend)',
+            html: `
+                <h3>Email Verification</h3>
+                <p>Your new OTP for email verification is: <strong>${otp}</strong></p>
+                <p>This OTP is valid for 10 minutes.</p>
+                <p>If you didn't request this, please ignore this email.</p>
+            `
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        console.log(`Resent OTP ${otp} to ${email}`);
 
         return apiResponse(res, {
             message: 'OTP resent to email successfully',
-            data: {otp}
+            data: { otp }
         });
     } catch (error) {
         console.error('Error resending email OTP:', error);
@@ -143,6 +183,4 @@ const resendEmailOTP = async (req, res) => {
     }
 };
 
-
-
-module.exports = {sendEmailOTP,verifyEmailOTP,resendEmailOTP}
+module.exports = { sendEmailOTP, verifyEmailOTP, resendEmailOTP };

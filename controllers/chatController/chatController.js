@@ -211,7 +211,7 @@ const sendMessage = async (req, res) => {
       const file = req.file;
       const fileName = `chat_media/${conversationId}_${Date.now()}_${file.originalname}`;
       console.log(`[sendMessage] Processing media upload: mimetype=${file.mimetype}, fileName=${fileName}`);
- // Extract file extension
+    // Extract file extension
       const extension = file.originalname.split('.').pop().toLowerCase();
       console.log(`[sendMessage] File extension: ${extension}`);
 
