@@ -20,6 +20,11 @@ const chatRoutes = require("./routes/chatRoutes");
 const deleteAccountRoutes = require("./routes/deleteprofileRoutes");
 const reportProfileRoutes = require("./routes/reportProfileRoutes");
 
+
+const superadminAuthRoutes = require("./Super-Admin-Panel/routes/authRoutes");
+const usercountRoutes = require("./Super-Admin-Panel/routes/usercountRoutes");
+const getalluserRoutes = require("./Super-Admin-Panel/routes/getusersRoutes");
+
 const app = express();
 const PORT = process.env.PORT;
 
@@ -87,6 +92,18 @@ app.use("/api/user/delete",deleteAccountRoutes)
 
 //report-profile Routes
 app.use("/api/user/report",reportProfileRoutes)
+
+
+//super-admin-panel 
+
+// auth routes
+app.use("/api/superadmin/auth",superadminAuthRoutes)
+
+//count user routes
+app.use("/api/superadmin/count",usercountRoutes)
+
+//get-all-user routes
+app.use("/api/superadmin/users",getalluserRoutes)
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>
