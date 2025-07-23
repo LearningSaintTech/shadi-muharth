@@ -21,9 +21,13 @@ const deleteAccountRoutes = require("./routes/deleteprofileRoutes");
 const reportProfileRoutes = require("./routes/reportProfileRoutes");
 
 
+
 const superadminAuthRoutes = require("./Super-Admin-Panel/routes/authRoutes");
 const usercountRoutes = require("./Super-Admin-Panel/routes/usercountRoutes");
 const getalluserRoutes = require("./Super-Admin-Panel/routes/getusersRoutes");
+const subscriptionPlansRoutes = require("./Super-Admin-Panel/routes/subscriptionplansRoutes");
+const getAllUserspaymentDetails = require("./Super-Admin-Panel/routes/paymentPageRoutes");
+const uploadTestimonials = require("./Super-Admin-Panel/routes/testimonialRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -104,6 +108,13 @@ app.use("/api/superadmin/count",usercountRoutes)
 
 //get-all-user routes
 app.use("/api/superadmin/users",getalluserRoutes)
+
+//subscription-plan routes
+app.use("/api/superadmin/plans",subscriptionPlansRoutes)
+
+app.use("/api/superadmin/payments",getAllUserspaymentDetails)
+
+app.use('/api/superadmin/testimonials',uploadTestimonials)
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>
