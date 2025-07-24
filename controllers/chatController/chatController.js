@@ -447,7 +447,7 @@ const getChatMessages = async (req, res) => {
 
     // Get all messages in chronological order
     const messages = await Chat.find({ conversationId })
-      .sort({ timestamp: 1 }) // Earliest first, like WhatsApp
+      .sort({ timestamp: 1 }) // Earliest first
       .populate({
         path: 'senderId',
         select: '_id'

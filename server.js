@@ -45,6 +45,9 @@ app.get("/", (req, res) => {
   res.send("Server Running");
 });
 
+
+//user-panel
+
 //UserAuthentication
 app.use("/api/auth",userAuthRoutes)
 

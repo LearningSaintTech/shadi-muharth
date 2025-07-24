@@ -35,7 +35,7 @@ const getAllUserspaymentDetails = async (req, res) => {
                 $project: {
                     fullName: '$personalInfo.fullName',
                     email: '$personalInfo.emailId',
-                    paymentStatus:"$paymentStatus",
+                    paymentStatus: "$paymentStatus",
                     mobileNumber: '$mobileNumber',
                     profileImage: '$profileImage.profileImageUrl',
                     planName: '$planName'
@@ -49,16 +49,82 @@ const getAllUserspaymentDetails = async (req, res) => {
             data: { users },
             statusCode: 200,
         });
-     } catch (error) {
+    } catch (error) {
         console.error('Error fetching user details:', error);
         return apiResponse(res, {
             success: false,
             message: 'Internal server error',
             data: null,
-           statusCode: 500,
+            statusCode: 500,
+        });
+    }
+};
+
+// Controller to export user payment details to CSV
+const exportToCsvController = async (req, res) => {
+    try {
+        // Aggregate data 
+        const users = await userAuth.aggregate([
+            {
+                $lookup: {
+                    from: 'userpersonalinfos',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    as: 'personalInfo'
+                }
+            },
+            { $unwind: { path: '$personalInfo', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: 'userprofileimages',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    as: 'profileImage'
+                }
+            },
+            { $unwind: { path: '$profileImage', preserveNullAndEmptyArrays: true } },
+            {
+                $project: {
+                    fullName: '$personalInfo.fullName',
+                    email: '$personalInfo.emailId',
+                    paymentStatus: {
+                        $cond: {
+                            if: { $eq: ['$paymentStatus', true] },
+                            then: 1,
+                            else: 0
+                        }
+                    },
+                    mobileNumber: '$mobileNumber' ,
+                    profileImage: '$profileImage.profileImageUrl',
+                    planName: '$planName'
+                }
+            }
+        ]);
+
+        // Define CSV columns
+        const columns = [
+            { key: 'fullName', header: 'Full Name' },
+            { key: 'email', header: 'Email' },
+            { key: 'paymentStatus', header: 'Payment Status' },
+            { key: 'mobileNumber', header: 'Mobile Number' },
+            { key: 'profileImage', header: 'Profile Image URL' },
+            { key: 'planName', header: 'Plan Name' }
+        ];
+
+        // Call exportToCsv with the required arguments
+        exportToCsv(res, users, columns, 'user_payment_details.csv');
+
+    } catch (error) {
+        console.error('Error exporting user details to CSV:', error);
+        return apiResponse(res, {
+            success: false,
+            message: 'Internal server error',
+            data: null,
+            statusCode: 500,
         });
     }
 };
 
 
-module.exports = {getAllUserspaymentDetails}
+
+module.exports = { getAllUserspaymentDetails, exportToCsvController }
