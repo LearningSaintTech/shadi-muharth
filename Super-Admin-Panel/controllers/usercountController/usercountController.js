@@ -1,4 +1,4 @@
-const userAuth = require("../../../models/userAuth/Auth");
+const userAuth = require("../../../user-panel/models/userAuth/Auth");
 const {apiResponse} = require("../../../utils/apiResponse");
 
 // Controller to get total user count

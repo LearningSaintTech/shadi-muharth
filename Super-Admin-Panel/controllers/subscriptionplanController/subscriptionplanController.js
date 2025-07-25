@@ -1,4 +1,4 @@
-const subscriptionPlans = require('../../../models/subscriptionPlans/subscriptionPlans');
+const subscriptionPlans = require('../../../user-panel/models/subscriptionPlans/subscriptionPlans');
 const { apiResponse } = require('../../../utils/apiResponse');
 
 // Controller to get planName, duration, and price for all subscription plans

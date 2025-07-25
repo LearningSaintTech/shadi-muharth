@@ -2,23 +2,23 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./config/db");
-const userAuthRoutes = require("./routes/AuthRoutes");
-const userPersonalInfoRoutes = require("./routes/userProfileRoutes");
-const userMatchingRoutes = require("./routes/userMatchingRoutes");
-const favouriteUserRoutes = require("./routes/FavoruiteUserRoutes");
-const likeuserProfileRoutes = require("./routes/likeuserprofileRoutes");
-const personalizedSearchRoutes = require("./routes/personalizedSearchRoutes");
-const subscriptionplanRoutes = require("./routes/subscriptionplanRoutes");
-const searchUserRoutes = require("./routes/searchUserRoutes");
-const emailVerifyRoutes = require("./routes/verifyemailRoutes");
-const documentsVerificationRoutes = require("./routes/documentsverificationRoutes");
-const sendInterestRoutes = require("./routes/sendInterestRoutes");
-const sendprofileVerificationRoutes = require("./routes/profileVerification");
-const buyPlanRoutes = require("./routes/buyPlanRoutes");
-const showTagRoutes = require("./routes/showplantagRoutes");
-const chatRoutes = require("./routes/chatRoutes");
-const deleteAccountRoutes = require("./routes/deleteprofileRoutes");
-const reportProfileRoutes = require("./routes/reportProfileRoutes");
+const userAuthRoutes = require("./user-panel/routes/AuthRoutes");
+const userPersonalInfoRoutes = require("./user-panel/routes/userProfileRoutes");
+const userMatchingRoutes = require("./user-panel/routes/userMatchingRoutes");
+const favouriteUserRoutes = require("./user-panel/routes/FavoruiteUserRoutes");
+const likeuserProfileRoutes = require("./user-panel/routes/likeuserprofileRoutes");
+const personalizedSearchRoutes = require("./user-panel/routes/personalizedSearchRoutes");
+const subscriptionplanRoutes = require("./user-panel/routes/subscriptionplanRoutes");
+const searchUserRoutes = require("./user-panel/routes/searchUserRoutes");
+const emailVerifyRoutes = require("./user-panel/routes/verifyemailRoutes");
+const documentsVerificationRoutes = require("./user-panel/routes/documentsverificationRoutes");
+const sendInterestRoutes = require("./user-panel/routes/sendInterestRoutes");
+const sendprofileVerificationRoutes = require("./user-panel/routes/profileVerification");
+const buyPlanRoutes = require("./user-panel/routes/buyPlanRoutes");
+const showTagRoutes = require("./user-panel/routes/showplantagRoutes");
+const chatRoutes = require("./user-panel/routes/chatRoutes");
+const deleteAccountRoutes = require("./user-panel/routes/deleteprofileRoutes");
+const reportProfileRoutes = require("./user-panel/routes/reportProfileRoutes");
 
 
 
@@ -42,7 +42,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Root Route
 app.get("/", (req, res) => {
-  res.send("Server Running");
+  res.send("Server is Running");
 });
 
 

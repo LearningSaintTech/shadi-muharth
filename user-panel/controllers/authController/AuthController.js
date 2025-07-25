@@ -1,5 +1,5 @@
-const superadminAuth = require('../../models/auth/auth');
-const OTPModel = require('../../../user-panel/models/OTP/OTP');
+const UserAuth = require('../../models/userAuth/Auth');
+const OTPModel = require('../../models/OTP/OTP');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { apiResponse } = require('../../../utils/apiResponse');
@@ -24,12 +24,12 @@ const login = async (req, res) => {
     }
 
     // Find or create user
-    let user = await superadminAuth.findOne({ mobileNumber });
+    let user = await UserAuth.findOne({ mobileNumber });
     if (!user) {
-      user = new superadminAuth({
+      user = new UserAuth({
         mobileNumber,
         isNumberVerified: false,
-        role: 'superAdmin'
+        role: 'user'
       });
       await user.save();
     }
@@ -76,7 +76,7 @@ const verifyOTP = async (req, res) => {
     }
 
     // Find user
-    const user = await superadminAuth.findOne({ mobileNumber });
+    const user = await UserAuth.findOne({ mobileNumber });
     if (!user) {
       return apiResponse(res, {
         success: false,
@@ -151,7 +151,7 @@ const resendOTP = async (req, res) => {
     }
 
     // Find user
-    const user = await superadminAuth.findOne({ mobileNumber });
+    const user = await UserAuth.findOne({ mobileNumber });
     if (!user) {
       return apiResponse(res, {
         success: false,

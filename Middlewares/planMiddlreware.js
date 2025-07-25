@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const SubscriptionPlan = require('../models/subscriptionPlans/subscriptionPlans');
-const Chat = require("../models/chat/chat");
-const User = require('../models/userAuth/Auth');
-const ChatRequest = require("../models/chat/chatRequest");
+const SubscriptionPlan = require('../user-panel/models/subscriptionPlans/subscriptionPlans');
+const Chat = require("../user-panel/models/chat/chat");
+const User = require('../user-panel/models/userAuth/Auth');
+const ChatRequest = require("../user-panel/models/chat/chatRequest");
 const { apiResponse } = require('../utils/apiResponse');
-const UserInterest = require("../models/sendInterest/sendInterest");
+const UserInterest = require("../user-panel/models/sendInterest/sendInterest");
 
 // Middleware to check access based on subscription plan
 const restrictAccess = (requiredFeature) => {

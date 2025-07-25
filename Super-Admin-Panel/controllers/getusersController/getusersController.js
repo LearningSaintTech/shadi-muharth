@@ -1,4 +1,4 @@
-const userAuth = require('../../../models/userAuth/Auth');
+const userAuth = require('../../../user-panel/models/userAuth/Auth');
 const { apiResponse } = require('../../../utils/apiResponse');
 const { exportToCsv } = require("../../../utils/exportToCsv");
 const mongoose = require('mongoose')
