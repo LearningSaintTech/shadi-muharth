@@ -92,4 +92,44 @@ const unlikeProfile = async (req, res) => {
   }
 };
 
-module.exports = { likeProfile, unlikeProfile };
+const getLikesCount = async (req, res) => {
+  try {
+    const  userId  = req.userId; 
+
+    // Validate userId
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Invalid or missing userId',
+        statusCode: 400,
+      });
+    }
+
+    // Find the profile by userId
+    const profile = await Profile.findOne({ userId }).select('LikesCount');
+    if (!profile) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Profile not found',
+        statusCode: 404,
+      });
+    }
+
+    // Return success response with likes count
+    return apiResponse(res, {
+      success: true,
+      message: 'Likes count retrieved successfully',
+      data: { LikesCount: profile.LikesCount },
+      statusCode: 200,
+    });
+  } catch (error) {
+    console.error('Error retrieving likes count:', error);
+    return apiResponse(res, {
+      success: false,
+      message: 'Server error',
+      statusCode: 500,
+    });
+  }
+};
+
+module.exports = { likeProfile, unlikeProfile ,getLikesCount};

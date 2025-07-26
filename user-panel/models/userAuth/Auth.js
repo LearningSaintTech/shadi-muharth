@@ -45,7 +45,10 @@ const userAuthSchema = new mongoose.Schema({
   },
   planExpiryDate:{
     type:Date
-  }
+  },
+  fcmToken:{
+    type:[String]
+  },
 },{timestamps: true});
 
 

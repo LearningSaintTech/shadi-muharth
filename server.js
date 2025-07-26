@@ -29,6 +29,9 @@ const subscriptionPlansRoutes = require("./Super-Admin-Panel/routes/subscription
 const getAllUserspaymentDetails = require("./Super-Admin-Panel/routes/paymentPageRoutes");
 const uploadTestimonials = require("./Super-Admin-Panel/routes/testimonialRoutes");
 
+
+const notificationHistory = require("./common/routes/notificationRoutes");
+
 const app = express();
 const PORT = process.env.PORT;
 
@@ -118,6 +121,12 @@ app.use("/api/superadmin/plans",subscriptionPlansRoutes)
 app.use("/api/superadmin/payments",getAllUserspaymentDetails)
 
 app.use('/api/superadmin/testimonials',uploadTestimonials)
+
+
+//common routes
+
+//Notification-history
+app.use("/api/notification-history",notificationHistory);
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () =>

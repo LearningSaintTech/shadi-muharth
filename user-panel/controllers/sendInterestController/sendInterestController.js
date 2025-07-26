@@ -1,18 +1,22 @@
 const UserAuth = require('../../models/userAuth/Auth');
-const UserInterest = require('../../models/sendInterest/sendInterest'); 
+const UserInterest = require('../../models/sendInterest/sendInterest');
 const { apiResponse } = require('../../../utils/apiResponse');
+const admin = require("../../../config/firebaseAdmin");
+const UserPersonalInfo = require("../../models/userProfile/userPersonalinfo");
+const Notification = require("../../../common/models/notification");
+const mongoose = require("mongoose")
 
 //send-Interest controller
 const sendInterest = async (req, res) => {
   try {
-    const { receiverId } = req.body; 
-    const senderId = req.userId; 
+    const { receiverId } = req.body;
+    const senderId = req.userId;
 
     // Validate input
-    if (!receiverId) {
+    if (!receiverId || !mongoose.Types.ObjectId.isValid(receiverId)) {
       return apiResponse(res, {
         success: false,
-        message: 'Receiver ID is required',
+        message: 'Valid Receiver ID is required',
         statusCode: 400
       });
     }
@@ -25,17 +29,27 @@ const sendInterest = async (req, res) => {
       });
     }
 
-    const sender = await UserAuth.findById(senderId);
+    // Check if sender exists and get their personal info
+    const sender = await UserAuth.findById(senderId).select('mobileNumber');
     if (!sender) {
       return apiResponse(res, {
         success: false,
         message: 'Sender not found',
         statusCode: 404
       });
-    };
+    }
 
-    // Check if receiver exists
-    const receiver = await UserAuth.findById(receiverId);
+    const senderPersonalInfo = await UserPersonalInfo.findOne({ userId: senderId }).select('fullName');
+    if (!senderPersonalInfo) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Sender personal information not found',
+        statusCode: 404
+      });
+    }
+
+    // Check if receiver exists and get their FCM tokens
+    const receiver = await UserAuth.findById(receiverId).select('fcmToken mobileNumber');
     if (!receiver) {
       return apiResponse(res, {
         success: false,
@@ -60,6 +74,48 @@ const sendInterest = async (req, res) => {
       receiverId
     });
 
+    // Create notification record
+    const notification = await Notification.create({
+      senderId,
+      receiverId,
+      title: 'New Interest Received!',
+      message: `${senderPersonalInfo.fullName} has shown interest in your profile.`,
+      type: 'interest',
+      read: false
+    });
+
+    // Send push notification to receiver if they have FCM tokens
+    if (receiver.fcmToken && receiver.fcmToken.length > 0) {
+      const topic = `/topics/user-${receiverId}`;
+
+      // Subscribe receiver's FCM tokens to their topic
+      try {
+        await admin.messaging().subscribeToTopic(receiver.fcmToken, topic);
+        console.log(`Subscribed ${receiver.fcmToken.length} tokens to topic: ${topic}`);
+      } catch (subscriptionError) {
+        console.error('Error subscribing to topic:', subscriptionError);
+
+      }
+
+      // Send notification to the topic 
+      const message = {
+        notification: {
+          title: 'New Interest Received!',
+          body: `${senderPersonalInfo.fullName} has shown interest in your profile.`,
+        },
+        topic: `user-${receiverId}`, // FCM automatically prepends /topics/
+      };
+
+      try {
+        const response = await admin.messaging().send(message);
+        console.log(`Notification sent to topic user-${receiverId}: ${response}`);
+
+      } catch (notificationError) {
+        console.error('Error sending notification:', notificationError);
+        // Continue with success response even if notification fails
+      }
+    }
+
     return apiResponse(res, {
       success: true,
       message: 'Interest sent successfully',
@@ -83,11 +139,12 @@ const sendInterest = async (req, res) => {
   }
 };
 
+
 //get-Interest controller
 const getInterests = async (req, res) => {
   try {
     const userId = req.userId;
-    console.log("userIddd",userId)
+    console.log("userIddd", userId)
 
     // Check if user exists and has a complete profile
     const user = await UserAuth.findById(userId);
@@ -127,4 +184,4 @@ const getInterests = async (req, res) => {
   }
 };
 
-module.exports = { sendInterest,getInterests };
+module.exports = { sendInterest, getInterests };

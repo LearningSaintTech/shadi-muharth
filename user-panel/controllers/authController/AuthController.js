@@ -3,6 +3,7 @@ const OTPModel = require('../../models/OTP/OTP');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { apiResponse } = require('../../../utils/apiResponse');
+const mongoose = require("mongoose");
 
 // Generate 4-digit OTP
 const generateOTP = () => {
@@ -186,4 +187,70 @@ const resendOTP = async (req, res) => {
   }
 };
 
-module.exports = { login, verifyOTP, resendOTP };
+
+
+//save fcm token
+
+const storeFcmToken = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { fcmToken } = req.body;
+
+    // Validate inputs
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Invalid or missing userId',
+        statusCode: 400,
+      });
+    }
+
+    if (!fcmToken || typeof fcmToken !== 'string') {
+      return apiResponse(res, {
+        success: false,
+        message: 'Invalid or missing FCM token',
+        statusCode: 400,
+      });
+    }
+
+    // Find user
+    const user = await UserAuth.findById(userId);
+    if (!user) {
+      return apiResponse(res, {
+        success: false,
+        message: 'User not found',
+        statusCode: 404,
+      });
+    }
+
+    // Check if token already exists
+    if (user.fcmToken.includes(fcmToken)) {
+      return apiResponse(res, {
+        success: true,
+        message: 'FCM token already stored',
+        data: { fcmToken, tokenCount: user.fcmToken.length },
+        statusCode: 200,
+      });
+    }
+
+    // Add new FCM token
+    user.fcmToken.push(fcmToken);
+    await user.save();
+
+    return apiResponse(res, {
+      success: true,
+      message: 'FCM token stored successfully',
+      data: { fcmToken, tokenCount: user.fcmToken.length },
+      statusCode: 201, 
+    });
+  } catch (error) {
+    console.error('Error storing FCM token:', error);
+    return apiResponse(res, {
+      success: false,
+      message: 'Server error',
+      statusCode: 500,
+    });
+  }
+};
+
+module.exports = { login, verifyOTP, resendOTP ,storeFcmToken};
