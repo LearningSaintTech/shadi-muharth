@@ -11,6 +11,14 @@ const profileVerificationSchema = new mongoose.Schema({
     ref: 'UserAuth',
     required: true
   },
+   receiver_status:{
+    enum:["upload documents","documents uploaded","notification sent"],
+    type:String
+  },
+  isdocumentsUploaded:{
+      type:Boolean,
+      default:false
+  },  
   createdAt: {
     type: Date,
     default: Date.now

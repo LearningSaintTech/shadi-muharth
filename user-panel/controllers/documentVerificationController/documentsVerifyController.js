@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { uploadMultipleImages } = require('../../../utils/s3Functions'); 
 const UserDocuments = require("../../models/documentVerification/documentsVerification");
 const { apiResponse } = require('../../../utils/apiResponse');
+const ProfileVerification = require("../../models/sendVerification/sendVerification");
 
 // Upload Documents API
 const uploadDocuments = async (req, res) => {
@@ -71,6 +72,15 @@ const uploadDocuments = async (req, res) => {
     const userDocuments = new UserDocuments(documentData);
     await userDocuments.save();
 
+    // Update all ProfileVerification records for this user (as receiver)
+    await ProfileVerification.updateMany(
+      { receiverId: userId },
+      { 
+        isdocumentsUploaded: true,
+        receiver_status: "documents uploaded"
+      }
+    );
+
     return apiResponse(res, {
       success: true,
       message: 'Documents uploaded successfully',
@@ -86,7 +96,6 @@ const uploadDocuments = async (req, res) => {
       statusCode: 500
     });
   }
-  
 };
 
 module.exports = { uploadDocuments };

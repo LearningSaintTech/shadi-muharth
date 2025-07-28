@@ -6,6 +6,9 @@ const UserProfileImage = require('../../models/userProfile/userProfileImage');
 const UserPersonalInfo = require('../../models/userProfile/userPersonalinfo');
 const { uploadImage } = require('../../../utils/s3Functions');
 const { apiResponse } = require('../../../utils/apiResponse');
+const Notification = require("../../../common/models/notification");
+const UserAuth = require("../../models/userAuth/Auth");
+const admin = require("../../../config/firebaseAdmin");
 const mongoose = require('mongoose');
 
 // Helper to generate unique conversation ID
@@ -26,6 +29,26 @@ const sendMessageRequest = async (req, res) => {
         statusCode: 400
       });
     }
+
+    const senderPersonalInfo = await UserPersonalInfo.findOne({ userId: senderId }).select('fullName');
+    if (!senderPersonalInfo) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Sender personal information not found',
+        statusCode: 404
+      });
+    }
+
+    // Check if receiver exists and get their FCM tokens
+    const receiver = await UserAuth.findById(receiverId).select('fcmToken mobileNumber');
+    if (!receiver) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Receiver not found',
+        statusCode: 404
+      });
+    }
+
 
     // Check if request or chat already exists
     const existingRequest = await ChatRequest.findOne({
@@ -78,6 +101,46 @@ const sendMessageRequest = async (req, res) => {
     });
 
     await chatRequest.save();
+    // Create notification record
+    const notification = await Notification.create({
+      senderId,
+      receiverId,
+      title: 'New Message Request!',
+      message: `${senderPersonalInfo.fullName} has sent you a message request.`,
+      type: 'message_request',
+      read: false
+    });
+
+    // Send push notification to receiver if they have FCM tokens
+    if (receiver.fcmToken && receiver.fcmToken.length > 0) {
+      const topic = `/topics/user-${receiverId}`;
+
+      // Subscribe receiver's FCM tokens to their topic
+      try {
+        await admin.messaging().subscribeToTopic(receiver.fcmToken, topic);
+        console.log(`Subscribed ${receiver.fcmToken.length} tokens to topic: ${topic}`);
+      } catch (subscriptionError) {
+        console.error('Error subscribing to topic:', subscriptionError);
+      }
+
+      // Send notification to the topic 
+      const messageNotification = {
+        notification: {
+          title: 'New Message Request!',
+          body: `${senderPersonalInfo.fullName} has sent you a message request.`,
+        },
+        topic: `user-${receiverId}`,
+      };
+
+      try {
+        const response = await admin.messaging().send(messageNotification);
+        console.log(`Notification sent to topic user-${receiverId}: ${response}`);
+      } catch (notificationError) {
+        console.error('Error sending notification:', notificationError);
+        // Continue with success response even if notification fails
+      }
+    }
+
 
     return apiResponse(res, {
       success: true,
@@ -211,7 +274,7 @@ const sendMessage = async (req, res) => {
       const file = req.file;
       const fileName = `chat_media/${conversationId}_${Date.now()}_${file.originalname}`;
       console.log(`[sendMessage] Processing media upload: mimetype=${file.mimetype}, fileName=${fileName}`);
-    // Extract file extension
+      // Extract file extension
       const extension = file.originalname.split('.').pop().toLowerCase();
       console.log(`[sendMessage] File extension: ${extension}`);
 
@@ -617,4 +680,4 @@ const searchChatsByName = async (req, res) => {
   }
 };
 
-module.exports = {sendMessageRequest,respondMessageRequest,sendMessage,getChatList,getChatMessages,searchChatsByName}
+module.exports = { sendMessageRequest, respondMessageRequest, sendMessage, getChatList, getChatMessages, searchChatsByName }

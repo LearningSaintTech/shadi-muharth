@@ -28,6 +28,7 @@ const getalluserRoutes = require("./Super-Admin-Panel/routes/getusersRoutes");
 const subscriptionPlansRoutes = require("./Super-Admin-Panel/routes/subscriptionplansRoutes");
 const getAllUserspaymentDetails = require("./Super-Admin-Panel/routes/paymentPageRoutes");
 const uploadTestimonials = require("./Super-Admin-Panel/routes/testimonialRoutes");
+const verifyprofileRoutes = require("./Super-Admin-Panel/routes/verifyProfileRoutes");
 
 
 const notificationHistory = require("./common/routes/notificationRoutes");
@@ -118,9 +119,14 @@ app.use("/api/superadmin/users",getalluserRoutes)
 //subscription-plan routes
 app.use("/api/superadmin/plans",subscriptionPlansRoutes)
 
+//payments routes
 app.use("/api/superadmin/payments",getAllUserspaymentDetails)
 
+//upload-testimonials routes
 app.use('/api/superadmin/testimonials',uploadTestimonials)
+
+//profile-verification routes
+app.use("/api/superadmin/profileVerification",verifyprofileRoutes)
 
 
 //common routes
