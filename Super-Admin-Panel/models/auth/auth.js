@@ -15,6 +15,9 @@ const superAdminAuthSchema = new mongoose.Schema({
     type:String,
     default:"superAdmin"
   },
+  fcmToken:{
+    type:[String]
+  }
   
 });
 

@@ -3,6 +3,7 @@ const OTPModel = require('../../models/OTP/OTP');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { apiResponse } = require('../../../utils/apiResponse');
+const superAdminAuth = require("../../../Super-Admin-Panel/models/auth/auth");
 const mongoose = require("mongoose");
 
 // Generate 4-digit OTP
@@ -213,14 +214,25 @@ const storeFcmToken = async (req, res) => {
       });
     }
 
-    // Find user
-    const user = await UserAuth.findById(userId);
+    // Check both UserAuth and superAdminAuth models
+    let user = await UserAuth.findById(userId).select('fcmToken role');
+    let userType = 'user';
+    
     if (!user) {
-      return apiResponse(res, {
-        success: false,
-        message: 'User not found',
-        statusCode: 404,
-      });
+      user = await superAdminAuth.findById(userId).select('fcmToken role');
+      userType = 'superAdmin';
+      if (!user) {
+        return apiResponse(res, {
+          success: false,
+          message: 'User not found',
+          statusCode: 404,
+        });
+      }
+    }
+
+    // Initialize fcmToken as an array if undefined or null
+    if (!user.fcmToken || !Array.isArray(user.fcmToken)) {
+      user.fcmToken = [];
     }
 
     // Check if token already exists
@@ -228,7 +240,7 @@ const storeFcmToken = async (req, res) => {
       return apiResponse(res, {
         success: true,
         message: 'FCM token already stored',
-        data: { fcmToken, tokenCount: user.fcmToken.length },
+        data: { fcmToken, tokenCount: user.fcmToken.length, userType },
         statusCode: 200,
       });
     }
@@ -240,8 +252,8 @@ const storeFcmToken = async (req, res) => {
     return apiResponse(res, {
       success: true,
       message: 'FCM token stored successfully',
-      data: { fcmToken, tokenCount: user.fcmToken.length },
-      statusCode: 201, 
+      data: { fcmToken, tokenCount: user.fcmToken.length, userType },
+      statusCode: 201,
     });
   } catch (error) {
     console.error('Error storing FCM token:', error);

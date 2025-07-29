@@ -11,9 +11,9 @@ const reportuserSchema = new mongoose.Schema({
         ref: 'UserAuth',
         required: true
     },
-    adminId: {
+    superadminId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'UserAuth',
+        ref: 'superAdminAuth',
         required: true
     },
 });

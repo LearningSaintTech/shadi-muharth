@@ -9,7 +9,7 @@ const getNotificationHistory = async (req, res) => {
     // Fetch all notifications
     const notifications = await Notification.find({ receiverId: userId })
       .sort({ createdAt: -1 }) // latest first
-      .select('senderId receiverId title message type read createdAt')
+      .select('_id senderId receiverId title message type read createdAt') // Added _id explicitly
       .lean();
 
     // Count unread notifications
@@ -25,7 +25,10 @@ const getNotificationHistory = async (req, res) => {
       success: true,
       message: 'Notification history fetched successfully',
       data: {
-        notifications,
+        notifications: notifications.map(notification => ({
+          notificationId: notification._id, 
+          ...notification
+        })),
         counts: {
           total: totalCount,
           unread: unreadCount
@@ -43,5 +46,49 @@ const getNotificationHistory = async (req, res) => {
   }
 };
 
+const deleteNotification = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { notificationId } = req.body;
 
-module.exports = { getNotificationHistory };
+    // Validate notificationId
+    if (!notificationId || !mongoose.Types.ObjectId.isValid(notificationId)) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Invalid or missing notification ID',
+        statusCode: 400
+      });
+    }
+
+    // Find and delete the notification
+    const notification = await Notification.findOneAndDelete({
+      _id: notificationId,
+      receiverId: userId
+    });
+
+    // Check if notification exists and belongs to the user
+    if (!notification) {
+      return apiResponse(res, {
+        success: false,
+        message: 'Notification not found or unauthorized',
+        statusCode: 404
+      });
+    }
+
+    return apiResponse(res, {
+      success: true,
+      message: 'Notification deleted successfully',
+      statusCode: 200
+    });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    return apiResponse(res, {
+      success: false,
+      message: 'Server error while deleting notification',
+      statusCode: 500
+    });
+  }
+};
+
+
+module.exports = { getNotificationHistory,deleteNotification };

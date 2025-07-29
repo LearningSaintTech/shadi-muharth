@@ -29,7 +29,8 @@ const login = async (req, res) => {
       user = new superadminAuth({
         mobileNumber,
         isNumberVerified: false,
-        role: 'superAdmin'
+        role: 'superAdmin',
+        fcmToken: []
       });
       await user.save();
     }
